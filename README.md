@@ -9,6 +9,8 @@ GitGui features:
 Important
 ----------
 GitGui does **nothing** about conflicts. So, if you think you will have a conflict in your code, be warned
+Note that a conflict only occurs if a line has been changed and committed in both branches, after they seperated.
+
 
 Intended use
 --------------
