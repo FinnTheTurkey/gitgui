@@ -8,7 +8,7 @@ GitGui features:
 
 Important
 ----------
-GitGui does **nothing** about diffs, or differences. So, if you think you will have a diff in your code, be warned
+GitGui does **nothing** about conflicts. So, if you think you will have a conflict in your code, be warned
 
 Intended use
 --------------
@@ -27,3 +27,11 @@ Then, in that folder, run this command: (with a terminal, or gitbash)
 git config remote.origin.url https://{USERNAME}:{PASSWORD}@github.com/{USERNAME}/{REPONAME}.git
 ``
 Now, you can send or get that repository from github with the "Get Branch From Server" and "Send Branch To Server" buttons.
+
+Executables
+------------
+Right now, I have only compiled it for the Raspberry Pi. I have it's executable in the repo.
+You can compile it for anything with pyinstaller. If you compile it for another platform, tell me, and I will intergrate it into my repo.
+
+
+** Hope you like it!**
