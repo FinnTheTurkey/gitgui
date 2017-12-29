@@ -320,6 +320,8 @@ class GitGui(object):
         head = self.repo.head            # the head points to the active branch/ref
         master = head.reference     # retrieve the reference the head points to
         index = self.repo.index
+
+        
         
         if not self.repo.untracked_files and not self.repo.index.diff(None):
             messagebox.showerror("No files edited","No files have been changed or added in this repository since the last commit")
@@ -333,6 +335,15 @@ class GitGui(object):
             
             l.append(i.a_path)
         txt += ' \n '.join(l)
+
+        
+        
+        f = open(os.path.join(self.gitdir,"VERSION.txt"),'w')
+        f.write(self.genorateVerFormat())
+        f.flush()
+        f.close()
+
+        
         
         for i in self.repo.untracked_files:
             
@@ -344,6 +355,7 @@ class GitGui(object):
             else:
                 self.repo.git.rm(i.a_path)
         a = self.message.get(0.0,'end')+txt
+
         a = a.replace('\n',';;;')
         index.commit(a)
         self.updateButton()
