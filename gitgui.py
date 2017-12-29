@@ -111,7 +111,10 @@ class BranchUi(object):
         sel = self.branches[self.bran.curselection()[0]]
         if not sel.startswith("* "):
             sel = sel[2:len(sel)]
-            self.repo.git.checkout(sel)
+            try:
+                self.repo.git.checkout(sel)
+            except:
+                messagebox.showerror("Error","You MUST commit before switching branches.")
             self.updateBranch()
 
     def removeBranch(self):
@@ -190,9 +193,17 @@ class GitGui(object):
             f.write("")
             f.flush()
             f.close()
+            f = open(os.path.join(os.path.expanduser("~"),".gitgui","verformat.txt"),'w')
+            f.write("Revision {!}")
+            f.flush()
+            f.close()
 
         f = open(os.path.join(os.path.expanduser("~"),".gitgui","lastused.txt"),'r')
         r= f.read()
+        f.close()
+
+        f = open(os.path.join(os.path.expanduser("~"),".gitgui","verformat.txt"),'r')
+        self.verinfo= f.read()
         f.close()
         
         
@@ -220,6 +231,7 @@ class GitGui(object):
 
         ttk.Button(self.root,text="Send Branch To Server",command=self.push).grid(row=4,column=2)
         ttk.Button(self.root,text="Get Branch From Server",command=self.pull).grid(row=4,column=0)
+        ttk.Button(self.root,text="Set Version Format",command=self.setVersionFormat).grid(row=4,column=1)
 
         self.abranch = None
 
@@ -227,15 +239,7 @@ class GitGui(object):
             self.setPath(r)
             
 
-            b = self.repo.git.branch()
-            branches = b.split('\n')
-            self.branches = branches
-            for e, i in enumerate(branches):
-                
-                if (i.startswith('* ')):
-                    
-                    self.abranch = i.replace("* ",'')
-                    self.updateButton()
+                                                         
         else:
             self.ft = True
                         
@@ -243,6 +247,43 @@ class GitGui(object):
 
         
         self.root.mainloop()
+
+    def genorateVerFormat(self):
+        
+        v = copy.deepcopy(self.verinfo)
+        allbranches = []
+        b = self.repo.git.branch()
+        branches = b.split('\n')
+        d = {}
+        heads = self.repo.heads
+        for e, i in enumerate(branches):
+            
+            
+            if (i.startswith('* ')):
+                allbranches.append(i.replace("* ",'')
+                                   )
+                a = i.replace("* ",'')
+            else:
+                allbranches.append(i.replace(" ",'')
+                                   )
+                a = i.replace(" ",'')
+
+            h = heads[a]
+            d[a] = len(h.log())
+
+        head = self.repo.head            # the head points to the active branch/ref
+        master = head.reference     # retrieve the reference the head points to
+        index = self.repo.index
+        d['!'] = len(master.log())
+        d['!!'] = master.name
+        v = time.strftime(v)
+        for i in d:
+            v = v.replace('{'+i+'}',str(d[i]))
+
+        return v
+        
+
+            
 
     def remotecon(self):
         if not self.repo:
@@ -252,7 +293,7 @@ class GitGui(object):
         if pl:
             self.repo.git.remote("add","origin",pl)
     def push(self):
-        if not self.repo:
+        if not self.repo:           
             messagebox.showerror("No Repository selected!","No Repository Selected! Click the button below the status button to select one!")
             return
         self.repo.git.push("-u","origin",self.abranch)
@@ -270,7 +311,7 @@ class GitGui(object):
         index = self.repo.index
         self.dir.config(text="["+self.gitdir+":Branch %s] Revision #%i" % (self.abranch,len(master.log())))
         self.message.delete(0.0,'end')
-        self.message.insert('end',"Revision #%i" % len(master.log()))
+        self.message.insert('end',self.genorateVerFormat())
 
     def commit(self):
         if not self.repo:
@@ -307,7 +348,7 @@ class GitGui(object):
         index.commit(a)
         self.updateButton()
         self.message.delete(0.0,'end')
-        self.message.insert('end',"Revision #%i" % len(master.log()))
+        self.message.insert('end',self.genorateVerFormat())
 
     def status(self):
         if not self.repo:
@@ -369,13 +410,32 @@ class GitGui(object):
 
             self.dir.config(text="["+dire+"] Revision #%i" % len(master.log()))
             self.message.delete(0.0,'end')
-            self.message.insert('end',"Revision #%i" % len(master.log()))
+            self.message.insert('end',self.genorateVerFormat())
 
             f = open(os.path.join(os.path.expanduser("~"),".gitgui","lastused.txt"),'w')
             f.write(dire)
             f.flush()
             f.close()
-            
+
+            b = self.repo.git.branch()
+            branches = b.split('\n')
+            self.branches = branches
+            for e, i in enumerate(branches):
+                
+                if (i.startswith('* ')):
+                    
+                    self.abranch = i.replace("* ",'')
+                    self.updateButton()
+
+
+    def setVersionFormat(self):
+        r = simpledialog.askstring("Enter format to show version","""You can use {branchname} to add the branch revision number, or {} to add current branch revision number,or {!!} to add the current branch name, and date and time (%Y, %m, etc...)""")
+        if r:
+            self.verinfo = r
+            f = open(os.path.join(os.path.expanduser("~"),".gitgui","verformat.txt"),'w')
+            f.write(self.verinfo)
+            f.flush()
+            f.close()
             
             
             
