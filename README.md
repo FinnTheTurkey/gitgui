@@ -1,9 +1,12 @@
-Git Gui
+Simple GitGui
 ========
-GitGui is meant for a single programmer, working on a project, who wants very simple version control and branches.
+Simple GitGui, or just GitGui, is meant for a single programmer, working on a project, who wants very simple version control and branches.
 GitGui features:
 1. Very simple. Big commit button, easy branching
-2. Supports sending to servers: you can send your repo to your server from GitGui. You may have to set up username/password yourself.(see Setup with Github)
+2. Supports sending to servers: you can send your repo to your server from GitGui. You may have to set up username/password yourself.(see Setup with Github below)
+3. You can setup your own version format, and use it in your programs by taking it from the VERSION.txt file!
+
+To install, git clone the master, or beta branch!
 
 
 Important
@@ -27,6 +30,18 @@ Then, in that folder, run this command: (with a terminal, or gitbash)
 git config remote.origin.url https://{USERNAME}:{PASSWORD}@github.com/{USERNAME}/{REPONAME}.git
 ``
 Now, you can send or get that repository from github with the "Get Branch From Server" and "Send Branch To Server" buttons.
+
+GIT format
+----------
+GitGui has 4 branches. 
+* master is for stable releases
+* beta is for mostly stable releases, which may have some bugs. I suggest you use the latest beta
+* nightly works, but has tiny changes, and hasn't been properly tested for bugs
+* develepement, which isn't on the github servers, is where I develop. Every time I do anything, it is commited to developement
+
+Here is my GitGui Version Format:
+``[%Y-%m-%d] Version {master}.{beta}.{nightly} {!!}``
+You can enter this into gitgui.
 
 Executables
 ------------
