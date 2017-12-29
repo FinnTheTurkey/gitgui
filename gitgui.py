@@ -441,14 +441,16 @@ class GitGui(object):
 
 
     def setVersionFormat(self):
-        r = simpledialog.askstring("Enter format to show version","""You can use {branchname} to add the branch revision number, or {} to add current branch revision number,or {!!} to add the current branch name, and date and time (%Y, %m, etc...)""")
+        r = simpledialog.askstring("Enter format to show version","""You can use {branchname} to add the branch revision number, or {!} to add current branch revision number,or {!!} to add the current branch name, and date and time (%Y, %m, etc...)""")
         if r:
             self.verinfo = r
             f = open(os.path.join(os.path.expanduser("~"),".gitgui","verformat.txt"),'w')
             f.write(self.verinfo)
             f.flush()
             f.close()
-            
+            self.message.delete(0.0,'end')
+            self.message.insert('end',self.genorateVerFormat())
+
             
             
             
